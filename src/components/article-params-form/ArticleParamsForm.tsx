@@ -11,19 +11,17 @@ import { Separator } from 'src/ui/separator/Separator';
 import { Text } from 'src/ui/text';
 import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
 
-type props = {
+type Props = {
 	updateOptionStyle: (options: ArticleStateType) => void
 	optionStyle: ArticleStateType
 	}
 ;
 
-export const ArticleParamsForm = (props: props) => {
-	const [isOpen, setIsOpen] = useState(false);
+export const ArticleParamsForm = (props: Props) => {
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [options, setOptions] = useState({...props.optionStyle});
 
 	const ref =useRef <HTMLDivElement>(null)
-	const refForm =useRef <HTMLFormElement>(null)
-
 
 	function handleSetFontFamily(option: OptionType) {
 		setOptions({ ...options,
@@ -51,7 +49,7 @@ export const ArticleParamsForm = (props: props) => {
 	}
 
 	function handleOptionClick(){
-		setIsOpen(!isOpen)
+		setIsMenuOpen(!isMenuOpen)
 	}
 
 	function resetForm() {
@@ -60,25 +58,25 @@ export const ArticleParamsForm = (props: props) => {
 	}
 
 
-	refForm.current?.addEventListener('submit', (e: Event) => {
+	function handleSubmit (e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 		props.updateOptionStyle(options)
 
-	});
+	};
 
 	useOutsideClickClose({
-		isOpen,
-		onChange: setIsOpen,
+		isOpen: isMenuOpen,
+		onChange: setIsMenuOpen,
 		rootRef: ref,
 	})
 
 	return (
 		<>
 		<div ref={ref}>
-			<ArrowButton isOpen={isOpen} onClick={handleOptionClick} />
-			<aside  className={clsx(styles.container, { [styles.container_open]: isOpen })}>
-				<form ref={refForm} className={styles.form}>
-					<Text size={31} weight={800} uppercase>Задайте параметры</Text>
+			<ArrowButton isOpen={isMenuOpen} onClick={handleOptionClick} />
+			<aside  className={clsx(styles.container, { [styles.container_open]: isMenuOpen })}>
+				<form onSubmit={handleSubmit} className={styles.form}>
+					<Text as={'h2'} size={31} weight={800} uppercase>Задайте параметры</Text>
 
 					<Select options={fontFamilyOptions} selected={options.fontFamilyOption} title='Шрифт'  onChange={handleSetFontFamily}  />
 
